@@ -10,8 +10,7 @@ async function runStableAPIConnect() {
         return client.db("incident-map");
     } catch (error) {
         console.error(error.message);
-    } finally {
-        await client.close();
+        process.exit(1);
     }
 }
 
