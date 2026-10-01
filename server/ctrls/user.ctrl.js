@@ -45,4 +45,11 @@ export const login = async (req, res) => {
     });
 };
 
-export const getUser = (req, res) => {};
+export const getUser = async (req, res) => {
+    const { email } = req.user;
+    const {hashedPassword, ...userProps} = await usersRepo.getItem({ email });
+    res.json({
+        success: true,
+        data: {user:{...userProps} },
+    });
+};

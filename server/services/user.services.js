@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const {SECRET_JWT} = process.env;
+const { SECRET_JWT } = process.env;
 
 export const generateToken = (email, role) => {
     const token = jwt.sign({ email, role }, SECRET_JWT);
@@ -8,6 +8,5 @@ export const generateToken = (email, role) => {
 };
 
 export const verifyToken = (token) => {
-    const res = jwt.verify(token, SECRET_JWT);
-    return res.payload;
+    return jwt.verify(token, SECRET_JWT);
 };
