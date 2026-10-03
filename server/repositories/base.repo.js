@@ -1,4 +1,4 @@
-import { Collection } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 
 export const createRepo = (/**@type {Collection} */ collection) => {
     const get = async (filter) => {
@@ -7,26 +7,43 @@ export const createRepo = (/**@type {Collection} */ collection) => {
         return items.map(formatId);
     };
 
-    const getItem = async (filter) => {
-        const item = await collection.findOne(filter);
+    const getItem = async ({ id, ...filter }) => {
+        const finalFilter =
+            id !== undefined
+                ? { _id: new ObjectId(id), ...filter }
+                : { ...filter };
+
+        const item = await collection.findOne(finalFilter);
         if (!item) return;
         return formatId(item);
     };
 
     const insert = async (item) => {
-        const { insertedId } = await collection.insertOne(item);
-        return insertedId.toString();
+        await collection.insertOne(item);
+        return formatId(item);
     };
 
-    const update = async (filter, data) => {
-        const item = await collection.findOneAndUpdate(filter, data, {
-            returnDocument: "after",
-        });
+    const update = async ({ id, ...filter }, data) => {
+        const finalFilter =
+            id !== undefined
+                ? { _id: new ObjectId(id), ...filter }
+                : { ...filter };
+        const item = await collection.findOneAndUpdate(
+            finalFilter,
+            { $set: data },
+            {
+                returnDocument: "after",
+            },
+        );
         if (!item) return;
         return formatId(item);
     };
-    const remove = async (filter) => {
-        const item = await collection.findOneAndDelete(filter);
+    const remove = async ({ id, ...filter }) => {
+        const finalFilter =
+            id !== undefined
+                ? { _id: new ObjectId(id), ...filter }
+                : { ...filter };
+        const item = await collection.findOneAndDelete(finalFilter);
         if (!item) return;
         return formatId(item);
     };

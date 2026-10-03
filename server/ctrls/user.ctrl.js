@@ -17,7 +17,7 @@ export const register = async (req, res) => {
         createdAt: new Date().toLocaleTimeString("he"),
     };
     const id = await usersRepo.insertUser({ ...user, hashedPassword });
-    const token = generateToken(email, "user");
+    const token = generateToken({ id, email, role: "user" });
     res.status(201).json({
         success: true,
         data: { user: { id, ...user }, token },
@@ -38,7 +38,7 @@ export const login = async (req, res) => {
             status: 401,
             message: "Wrong password",
         });
-    const token = generateToken(email, "user");
+    const token = generateToken({ id: userProps.id, email, role: "user" });
     res.json({
         success: true,
         data: { user: { ...userProps }, token },
@@ -46,10 +46,16 @@ export const login = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
-    const { email } = req.user;
-    const {hashedPassword, ...userProps} = await usersRepo.getUser({ email });
+    const { id } = req.user;
+    const user = await usersRepo.getUser({ id });
+    if (!user)
+        throw Object.assign(new Error(), {
+            status: 404,
+            message: "User not found",
+        });
+    const { hashedPassword, ...userProps } = user;
     res.json({
         success: true,
-        data: {user:{...userProps} },
+        data: { user: { ...userProps } },
     });
 };

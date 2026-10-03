@@ -14,12 +14,16 @@ export const auth = (req, _res, next) => {
             status: 403,
             message: "Token pattern must be 'Bearer <token>'",
         });
-    const user = verifyToken(tokenParts[1]);
-    if (!user)
+    let user;
+    try {
+        user = verifyToken(tokenParts[1]);
+        if (!user) throw new Error();
+    } catch (error) {
         throw Object.assign(new Error(), {
             status: 403,
             message: "Invalid token",
         });
+    }
     req.user = user;
     next();
 };
