@@ -30,3 +30,9 @@ export const updateIncident = async (req, res) => {
     res.json({ success: true, data: incident });
 
 }
+
+export const deleteIncident = async (req, res) => {
+    const {id} = req.params
+    const incident = await incidentsRepo.deleteIncident({id})    
+    res.json({ success: true, data: incident });
+}
