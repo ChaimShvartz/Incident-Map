@@ -3,8 +3,15 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MapPage from "./pages/MapPage";
+import { useUserStore } from "./store/useUserStore";
+import { useEffect } from "react";
 
 const App = () => {
+    const { initStore } = useUserStore();
+    useEffect(() => {
+        initStore();
+    }, []);
+
     return (
         <BrowserRouter>
             <Routes>
